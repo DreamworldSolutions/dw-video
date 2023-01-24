@@ -22,6 +22,12 @@
   "publishConfig": {
     "access": "public"
   },
+  "devDependencies": {
+    "semantic-release": "17.0.8"
+  },
+  "dependencies": {
+    "@dreamworld/pwa-helpers": "^1.14.0"
+  },
   "resolutions": {
     "tslib": "2.1.0"
   },
