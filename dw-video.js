@@ -8,7 +8,7 @@ import { isElementAlreadyRegistered } from "@dreamworld/pwa-helpers/utils.js";
  * - Currntly support only [viemo](https://vimeo.com/) video.
  * - Auto compute height or width based on `auto` property, give another value as a css of element.
  *
- * ## Examples
+ * ## Examples 
  *  ```html
  *    <dw-video
  *      auto='width'
