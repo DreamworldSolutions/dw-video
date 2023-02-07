@@ -7,21 +7,17 @@ import Player from '@vimeo/player';
  *
  * ## Behaviours
  * - Currntly support only [viemo](https://vimeo.com/) video.
- * - Auto compute height or width based on `auto` property, give another value as a css of element.
- *
+ * - Auto compute height based on width css style.
  * ## Examples 
  *  ```html
  *    <dw-video
- *      auto='width'
  *      src='https://player.vimeo.com/video/313303279'>
  *    </dw-video>
  *  ```
  *
  *  ```css
- *    <!-- In this above case you give a height css property as an element. -->
- *
  *    dw-video {
- *      height: 200px;
+ *      width: 500px;
  *    }
  *  ```
  * 
@@ -35,20 +31,22 @@ export class DwVideo extends LitElement {
       css`
         :host {
           display: block;
-        }
-
-        :host([auto='height']) {
-          height: auto !important;
-        }
-
-        :host([auto='width']) {
-          width: auto !important;
-        }
-
-        #video-player, 
-        #video-player iframe {
           width: 100%;
-          height: 100%;
+        }
+
+        #video-player {
+          overflow:hidden;
+          padding-bottom:56.25%;
+          position:relative;
+          height:0;
+        }
+
+        #video-player iframe {
+          left:0;
+          top:0;
+          height:100%;
+          width:100%;
+          position:absolute;
         }
       `,
     ];
@@ -63,24 +61,12 @@ export class DwVideo extends LitElement {
       src: {
         type: String
       },
-
-      /**
-       * Auto compute css property name.
-       * Default value: height
-       * Possible value: height, width.
-       */
-      auto: {
-        type: String,
-        reflect: true,
-        attribute: 'auto'
-      }
     };
   }
 
   constructor() {
     super();
     this.doNotDelayRendering = true;
-    this.auto = 'height';
   }
 
   render() {
