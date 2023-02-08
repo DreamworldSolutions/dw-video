@@ -39,6 +39,7 @@ export class DwVideo extends LitElement {
           padding-bottom:56.25%;
           position:relative;
           height:0;
+          border:var(--video-border, none)
         }
 
         #video-player iframe {
