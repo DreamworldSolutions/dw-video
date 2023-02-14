@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "A WebComponent to show zoomable video on documentation & blog sites",
   "main": "dw-video.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
