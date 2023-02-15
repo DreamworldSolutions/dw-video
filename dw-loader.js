@@ -1,5 +1,4 @@
 import { css } from '@dreamworld/pwa-helpers/lit.js';
-import { isElementAlreadyRegistered } from "@dreamworld/pwa-helpers/utils.js";
 import { CircularProgress } from "@material/mwc-circular-progress/mwc-circular-progress.js";
 
 export class DwLoader extends CircularProgress {
@@ -44,8 +43,4 @@ export class DwLoader extends CircularProgress {
   }
 }
 
-if (isElementAlreadyRegistered("dw-loader")) {
-  console.warn("lit: 'dw-loader' is already registered, so registration skipped.");
-} else {
-  customElements.define('dw-loader', DwLoader);
-}
+customElements.define('dw-loader', DwLoader);

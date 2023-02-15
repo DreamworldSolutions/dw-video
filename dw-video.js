@@ -1,5 +1,4 @@
 import { LitElement, html, css } from "@dreamworld/pwa-helpers/lit.js";
-import { isElementAlreadyRegistered } from "@dreamworld/pwa-helpers/utils.js";
 import Player from '@vimeo/player';
 import dwFetch from '@dreamworld/fetch'
 
@@ -10,9 +9,10 @@ import './dw-loader.js';
  * A WebComponent to show a video thumbnail on documentation & blog sites.
  *
  * ## Behaviours
- * - Currntly support only [viemo](https://vimeo.com/) video.
+ * - Currntly support only [Vimeo](https://vimeo.com/) video.
  * - Auto compute height based on width css style.
- * - If you want to show Vimeo actual video instead of a thumbnail then set the `inline` property as a `true`.
+ * - On thumbnail click, open [Vimeo](https://vimeo.com/) video in new tab.
+ * - If you want to show [Vimeo](https://vimeo.com/) actual video instead of a thumbnail then set the `inline` property as a `true`.
  *
  * ## Examples
  *  - Default Examples
@@ -51,6 +51,7 @@ export class DwVideo extends LitElement {
     return [
       css`
         :host {
+          position: relative;
           display: block;
           width: 100%;
         }
@@ -78,6 +79,13 @@ export class DwVideo extends LitElement {
 
         :host([loaded]) #img-container img {
           opacity: 1;
+        }
+
+        dw-loader {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%)
         }
       `,
     ];
@@ -127,7 +135,9 @@ export class DwVideo extends LitElement {
         <div id="video-player"></div>
       `: html`
         <div id="img-container">
-          <img @load=${this.__onPreviewLoad} src=${this._thumbnailURL}/>
+          <a href=${this.src} target="_blank">
+            <img @load=${this.__onPreviewLoad} src=${this._thumbnailURL}/>
+          </a>
         </div>
       `}
 
@@ -143,6 +153,7 @@ export class DwVideo extends LitElement {
   updated(changeProps) {
     super.updated && super.updated(changeProps);
     if(changeProps.has('src') || changeProps.has('inline')) {
+      this._previewLoaded = false;
       if(this.src) {
         if(this.inline) {
           this.__loadVideo();
@@ -189,8 +200,4 @@ export class DwVideo extends LitElement {
   }
 }
 
-if (isElementAlreadyRegistered("dw-video")) {
-  console.warn("lit: 'dw-video' is already registered, so registration skipped.");
-} else {
-  customElements.define("dw-video", DwVideo);
-}
+customElements.define("dw-video", DwVideo);
