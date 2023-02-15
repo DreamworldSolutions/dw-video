@@ -27,6 +27,7 @@
     "semantic-release": "17.0.8"
   },
   "dependencies": {
+    "@dreamworld/fetch": "^1.0.0",
     "@dreamworld/pwa-helpers": "^1.14.0",
     "@vimeo/player": "^2.18.0"
   },

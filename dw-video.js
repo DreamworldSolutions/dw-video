@@ -1,28 +1,46 @@
 import { LitElement, html, css } from "@dreamworld/pwa-helpers/lit.js";
 import { isElementAlreadyRegistered } from "@dreamworld/pwa-helpers/utils.js";
 import Player from '@vimeo/player';
+import dwFetch from '@dreamworld/fetch'
 
 /**
- * A WebComponent to show a video on documentation & blog sites.
+ * A WebComponent to show a video thumbnail on documentation & blog sites.
  *
  * ## Behaviours
  * - Currntly support only [viemo](https://vimeo.com/) video.
  * - Auto compute height based on width css style.
- * ## Examples 
- *  ```html
- *    <dw-video
- *      src='https://player.vimeo.com/video/313303279'>
- *    </dw-video>
- *  ```
+ * - If you want to show Vimeo actual video instead of a thumbnail then set the `inline` property as a `true`.
  *
- *  ```css
- *    dw-video {
- *      width: 500px;
- *    }
- *  ```
- * 
+ * ## Examples
+ *  - Default Examples
+ *    ```html
+ *      <dw-video
+ *        src='https://player.vimeo.com/video/313303279'>
+ *      </dw-video>
+ *    ```
+ *
+ *    ```css
+ *      dw-video {
+ *        width: 500px;
+ *      }
+ *    ```
+ *
+ * - Inline Video
+ *    ```html
+ *      <dw-video
+ *        inline
+ *        src='https://player.vimeo.com/video/313303279'>
+ *      </dw-video>
+ *    ```
+ *
+ *    ```css
+ *      dw-video {
+ *        width: 500px;
+ *      }
+ *    ```
+ *
  * @fires video-loaded - when video is successfully loaded.
- * 
+ *
  * @element dw-video
  */
 export class DwVideo extends LitElement {
@@ -62,6 +80,21 @@ export class DwVideo extends LitElement {
       src: {
         type: String
       },
+
+      /**
+       * If `true` then shows a inline vimeo video, Otherwise shows a viemo video thumbnail.
+       */
+      inline: {
+        type: Boolean,
+        reflect: true
+      },
+
+      /**
+       * Video thumbnail-url.
+       */
+      _thumbnailURL: {
+        type: String
+      }
     };
   }
 
@@ -72,7 +105,13 @@ export class DwVideo extends LitElement {
 
   render() {
     return html`
-      <div id="video-player"></div>
+      ${this.inline ? html`
+        <div id="video-player"></div>
+      `: html`
+        <div class="img-container">
+          <img src=${this._thumbnailURL} />
+        </div>
+      `}
     `;
   }
 
@@ -82,10 +121,23 @@ export class DwVideo extends LitElement {
 
   updated(changeProps) {
     super.updated && super.updated(changeProps);
-    if(changeProps.has('src')) {
+    if(changeProps.has('src') || changeProps.has('inline')) {
       if(this.src) {
-        this.__loadVideo();
+        if(this.inline) {
+          this.__loadVideo();
+        } else {
+          this.__loadVideoThumbnail();
+        }
       }
+    }
+  }
+
+  async __loadVideoThumbnail() {
+    try {
+      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this.src}`);
+      this._thumbnailURL = response && (response['thumbnail_url_with_play_button'] || response['thumbnail_url']) || '';
+    } catch (error) {
+      console.error("dw-video: load video thumbnail failed, due to this: ", console.error());
     }
   }
 
@@ -113,7 +165,7 @@ export class DwVideo extends LitElement {
     } catch (error) {}
   }
 }
-  
+
 if (isElementAlreadyRegistered("dw-video")) {
   console.warn("lit: 'dw-video' is already registered, so registration skipped.");
 } else {
