@@ -42,7 +42,7 @@ import './dw-loader.js';
  *      }
  *    ```
  *
- * @fires video-loaded - when video is successfully loaded.
+ * @fires loaded - when video thumbnail/inline-video is successfully loaded.
  *
  * @element dw-video
  */
@@ -137,7 +137,7 @@ export class DwVideo extends LitElement {
 
   __onPreviewLoad() {
     this._previewLoaded = true;
-    this.dispatchEvent(new CustomEvent('video-loaded', { detail: { } }, { bubbles: false }));
+    this.dispatchEvent(new CustomEvent('loaded', { detail: { } }, { bubbles: false }));
   }
 
   updated(changeProps) {
