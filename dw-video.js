@@ -119,7 +119,17 @@ export class DwVideo extends LitElement {
       /**
        * `true` when id content is loaded.
        */
-      _previewLoaded: { type: Boolean, reflect: true, attribute: 'loaded'}
+      _previewLoaded: { type: Boolean, reflect: true, attribute: 'loaded'},
+
+      /**
+       * if `true` then video is autoplay.
+       */
+      autoplay : { type: Boolean, reflect: true },
+
+      /**
+       * if `true` then video is muted.
+      */
+      muted: { type: Boolean }
     };
   }
 
@@ -127,6 +137,8 @@ export class DwVideo extends LitElement {
     super();
     this.doNotDelayRendering = true;
     this._previewLoaded = false;
+    this.autoplay = false;
+    this.muted = false;
   }
 
   render() {
@@ -182,15 +194,15 @@ export class DwVideo extends LitElement {
 
     const options = {
       url: this.src,
-      autoplay: true,
-      muted: true,
+      autoplay: this.autoplay,
+      muted: this.muted,
     };
 
     const el = this.shadowRoot.querySelector('#video-player');
     this._player = new Player(el, options);
     await this._player.ready();
     this.__onPreviewLoad();
-    this._playVideo();
+    this.autoplay && this._playVideo();
   }
 
   async _playVideo() {
