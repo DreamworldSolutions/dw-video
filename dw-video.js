@@ -124,12 +124,17 @@ export class DwVideo extends LitElement {
       /**
        * if `true` then video is autoplay.
        */
-      autoplay : { type: Boolean, reflect: true },
+      autoplay : { type: Boolean, reflect: true, attribute: 'auto-play'},
 
       /**
        * if `true` then video is muted.
-      */
-      muted: { type: Boolean }
+       */
+      muted: { type: Boolean, reflect: true},
+
+      /**
+       * if `true` then video is muted.
+       */
+      loop: { type: Boolean, reflect: true}
     };
   }
 
@@ -139,6 +144,7 @@ export class DwVideo extends LitElement {
     this._previewLoaded = false;
     this.autoplay = false;
     this.muted = false;
+    this.loop = false;
   }
 
   render() {
@@ -195,7 +201,9 @@ export class DwVideo extends LitElement {
     const options = {
       url: this.src,
       autoplay: this.autoplay,
-      muted: this.muted,
+      muted: this.autoplay || this.muted,
+      loop: this.loop,
+      autopause: false
     };
 
     const el = this.shadowRoot.querySelector('#video-player');
