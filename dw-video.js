@@ -42,7 +42,11 @@ import './dw-loader.js';
  *      }
  *    ```
  *
- * @fires loaded - when video thumbnail/inline-video is successfully loaded.
+ * @event loaded - when video thumbnail/inline-video is successfully loaded.
+ * @event dw-video-play { title, url, seconds, percent, duration }
+ * @event dw-video-pause { title, url, seconds, percent, duration }
+ * @event dw-video-seeked { title, url, seconds, percent, duration }
+ * @event dw-video-ended { title, url, seconds, percent, duration }
  *
  * @element dw-video
  */
@@ -145,6 +149,15 @@ export class DwVideo extends LitElement {
     this.autoplay = false;
     this.muted = false;
     this.loop = false;
+    this._onPlay = this._onPlay.bind(this);
+    this._onPause = this._onPause.bind(this);
+    this._onSeeked = this._onSeeked.bind(this);
+    this._onEnded = this._onEnded.bind(this);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unbindVideoEvents();
   }
 
   render() {
@@ -208,6 +221,7 @@ export class DwVideo extends LitElement {
 
     const el = this.shadowRoot.querySelector('#video-player');
     this._player = new Player(el, options);
+    this._bindVideoEvents();
     await this._player.ready();
     this.__onPreviewLoad();
     this.autoplay && this._playVideo();
@@ -217,6 +231,48 @@ export class DwVideo extends LitElement {
     try {
       await this._player.play();
     } catch (error) {}
+  }
+
+  _bindVideoEvents() {
+    this._player.on('play', this._onPlay);
+    this._player.on('pause', this._onPause);
+    this._player.on('seeked', this._onSeeked);
+    this._player.on('ended', this._onEnded);
+  }
+
+  _unbindVideoEvents() {
+    if(!this._player){
+      return;
+    }
+
+    this._player.off('play');
+    this._player.off('pause');
+    this._player.off('seeked');
+    this._player.off('ended');
+  }
+
+  async _onPlay(event){
+    const title = await this._player.getVideoTitle();
+    const url = await this._player.getVideoUrl();
+    window.dispatchEvent(new CustomEvent("dw-video-play", { detail: { ...event, title, url,  } }));
+  }
+
+  async _onPause(event){
+    const title = await this._player.getVideoTitle();
+    const url = await this._player.getVideoUrl();
+    window.dispatchEvent(new CustomEvent("dw-video-pause", { detail: { ...event, title, url,  } }));
+  }
+
+  async _onSeeked(event){
+    const title = await this._player.getVideoTitle();
+    const url = await this._player.getVideoUrl();
+    window.dispatchEvent(new CustomEvent("dw-video-seeked", { detail: { ...event, title, url,  } }));
+  }
+
+  async _onEnded(event){
+    const title = await this._player.getVideoTitle();
+    const url = await this._player.getVideoUrl();
+    window.dispatchEvent(new CustomEvent("dw-video-ended", { detail: { ...event, title, url,  } }));
   }
 }
 
