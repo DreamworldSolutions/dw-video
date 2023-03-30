@@ -197,7 +197,7 @@ export class DwVideo extends LitElement {
 
   async __loadVideoThumbnail() {
     try {
-      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this.src}`);
+      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this.src}&width=1920&height=1080`);
       let responseText; try { responseText = await response.text(); responseText = responseText.trim(); } catch (err) {}
       let responseJSON; try { responseJSON = JSON.parse(responseText); } catch (e) {}
       this._thumbnailURL = responseJSON && (responseJSON['thumbnail_url_with_play_button'] || responseJSON['thumbnail_url']) || '';
