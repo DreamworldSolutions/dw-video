@@ -60,7 +60,7 @@ export class DwVideo extends LitElement {
           width: 100%;
         }
 
-        #video-player, #img-container {
+        .embed-container {
           overflow:hidden;
           padding-bottom:56.25%;
           position:relative;
@@ -68,21 +68,20 @@ export class DwVideo extends LitElement {
           border:var(--dw-video-border, none);
         }
 
-        #video-player iframe, #img-container img {
+        #video-player {
           left:0;
           top:0;
           height:100%;
           width:100%;
           position:absolute;
         }
-
-        #img-container img {
+        
+        a {
+          position: absolute;
+          inset: 0;
+          z-index: 99;
           opacity: 0;
-          transition: opacity 0.3s ease-in-out;
-        }
-
-        :host([loaded]) #img-container img {
-          opacity: 1;
+          background: transparent;
         }
 
         dw-loader {
@@ -102,7 +101,7 @@ export class DwVideo extends LitElement {
        * It should be vimeo video path e.g. https://player.vimeo.com/video/313303279.
        */
       src: {
-        type: String
+        type: String, reflect: true
       },
 
       /**
@@ -111,13 +110,6 @@ export class DwVideo extends LitElement {
       inline: {
         type: Boolean,
         reflect: true
-      },
-
-      /**
-       * Video thumbnail-url.
-       */
-      _thumbnailURL: {
-        type: String
       },
 
       /**
@@ -162,18 +154,16 @@ export class DwVideo extends LitElement {
 
   render() {
     return html`
-      ${this.inline ? html`
-        <div id="video-player"></div>
-      `: html`
-        <div id="img-container">
-          <a href=${this.src} target="_blank">
-            <img @load=${this.__onPreviewLoad} src=${this._thumbnailURL}/>
-          </a>
-        </div>
-      `}
-
       ${!this._previewLoaded ? html`<dw-loader></dw-loader>` : ''}
-    `;
+      ${!this.inline ? html`<a href=${this.src} target="_blank"></a>` : ''}
+      ${!this._previewLoaded ? html`<dw-loader></dw-loader>` : ''}
+      <div class="embed-container">
+        <iframe id="video-player" src="${this.src}${!this.inline ? this.src.includes('?') ? `&controls=0` : `?controls=0` : ''}" width="100%"
+          frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen>
+        </iframe>
+      </div>
+      
+    `
   }
 
   __onPreviewLoad() {
@@ -183,36 +173,18 @@ export class DwVideo extends LitElement {
 
   updated(changeProps) {
     super.updated && super.updated(changeProps);
-    if(changeProps.has('src') || changeProps.has('inline')) {
+    if(changeProps.has('src') && this.src) {
       this._previewLoaded = false;
-      if(this.src) {
-        if(this.inline) {
-          this.__loadVideo();
-        } else {
-          this.__loadVideoThumbnail();
-        }
-      }
+      this._initVimeo();
     }
   }
 
-  async __loadVideoThumbnail() {
-    try {
-      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this.src}&width=1920&height=1080`);
-      let responseText; try { responseText = await response.text(); responseText = responseText.trim(); } catch (err) {}
-      let responseJSON; try { responseJSON = JSON.parse(responseText); } catch (e) {}
-      this._thumbnailURL = responseJSON && (responseJSON['thumbnail_url_with_play_button'] || responseJSON['thumbnail_url']) || '';
-    } catch (error) {
-      console.error("dw-video: load video thumbnail failed, due to this: ", console.error());
-    }
-  }
-
-  async __loadVideo() {
+  async _initVimeo() {
     if(this._player) {
       this._player.destroy && this._player.destroy();
     }
 
     const options = {
-      url: this.src,
       autoplay: this.autoplay,
       muted: this.autoplay || this.muted,
       loop: this.loop,
