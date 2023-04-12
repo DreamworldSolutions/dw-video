@@ -80,8 +80,11 @@ export class DwVideo extends LitElement {
           position: absolute;
           inset: 0;
           z-index: 99;
-          opacity: 0;
           background: transparent;
+        }
+
+        a > img {
+          width: 100%;
         }
 
         dw-loader {
@@ -110,6 +113,13 @@ export class DwVideo extends LitElement {
       inline: {
         type: Boolean,
         reflect: true
+      },
+
+      /**
+       * Video thumbnail-url.
+       */
+      _thumbnailURL: {
+        type: String
       },
 
       /**
@@ -155,11 +165,16 @@ export class DwVideo extends LitElement {
   render() {
     return html`
       ${!this._previewLoaded ? html`<dw-loader></dw-loader>` : ''}
-      ${!this.inline ? html`<a href=${this.src} target="_blank"></a>` : ''}
-      ${!this._previewLoaded ? html`<dw-loader></dw-loader>` : ''}
+      
+      ${!this.inline ? html`<a href=${this.src} target="_blank">
+        ${this._thumbnailURL ? html`<img src=${this._thumbnailURL} />` : ''}
+      </a>` : ''}
+
       <div class="embed-container">
-        <iframe id="video-player" src="${this.src}${!this.inline ? this.src.includes('?') ? `&controls=0` : `?controls=0` : ''}" width="100%"
-          frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen>
+        <iframe id="video-player" 
+          src="${this.src}${!this.inline ? this.src.includes('?') ? `&controls=0` : `?controls=0` : ''}" 
+          width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen allow="autoplay" 
+          @load=${this.__onPreviewLoad}>
         </iframe>
       </div>
       
@@ -176,6 +191,20 @@ export class DwVideo extends LitElement {
     if(changeProps.has('src') && this.src) {
       this._previewLoaded = false;
       this._initVimeo();
+      if(!this.inline){
+        this.__loadVideoThumbnail();
+      }
+    }
+  }
+
+  async __loadVideoThumbnail() {
+    try {
+      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this.src}&width=1920&height=1080`);
+      let responseText; try { responseText = await response.text(); responseText = responseText.trim(); } catch (err) {}
+      let responseJSON; try { responseJSON = JSON.parse(responseText); } catch (e) {}
+      this._thumbnailURL = responseJSON && (responseJSON['thumbnail_url_with_play_button'] || responseJSON['thumbnail_url']) || '';
+    } catch (error) {
+      console.error("dw-video: load video thumbnail failed, due to this: ", console.error());
     }
   }
 
@@ -195,14 +224,15 @@ export class DwVideo extends LitElement {
     this._player = new Player(el, options);
     this._bindVideoEvents();
     await this._player.ready();
-    this.__onPreviewLoad();
     this.autoplay && this._playVideo();
   }
 
   async _playVideo() {
     try {
       await this._player.play();
-    } catch (error) {}
+    } catch (error) {
+      console.error('Failed to play video:', error);
+    }
   }
 
   _bindVideoEvents() {
