@@ -204,7 +204,7 @@ export class DwVideo extends LitElement {
       let responseJSON; try { responseJSON = JSON.parse(responseText); } catch (e) {}
       this._thumbnailURL = responseJSON && (responseJSON['thumbnail_url_with_play_button'] || responseJSON['thumbnail_url']) || '';
     } catch (error) {
-      console.error("dw-video: load video thumbnail failed, due to this: ", console.error());
+      console.error("dw-video: load video thumbnail failed, due to this: ", error);
     }
   }
 
@@ -231,7 +231,7 @@ export class DwVideo extends LitElement {
     try {
       await this._player.play();
     } catch (error) {
-      console.error('Failed to play video:', error);
+      console.warn('Failed to autoplay:', error);
     }
   }
 
