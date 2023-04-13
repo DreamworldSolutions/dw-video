@@ -172,7 +172,7 @@ export class DwVideo extends LitElement {
 
       <div class="embed-container">
         <iframe id="video-player" 
-          loading=lazy
+          loading="lazy"
           src="${this.src}${!this.inline ? this.src.includes('?') ? `&controls=0` : `?controls=0` : ''}" 
           width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen allow="autoplay" 
           @load=${this.__onPreviewLoad}>
