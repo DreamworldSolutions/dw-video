@@ -79,7 +79,7 @@ export class DwVideo extends LitElement {
         a {
           position: absolute;
           inset: 0;
-          z-index: 99;
+          z-index: 1;
           background: transparent;
         }
 
