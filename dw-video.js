@@ -242,9 +242,7 @@ export class DwVideo extends LitElement {
   }
 
   async _initVimeo() {
-    if (this._player) {
-      this._player.destroy && this._player.destroy();
-    }
+    this._unbindVideoEvents();
 
     const options = {
       muted: this.autoplay || this.muted,
