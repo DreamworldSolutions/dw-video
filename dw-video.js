@@ -335,6 +335,10 @@ export class DwVideo extends LitElement {
   }
 
   async _onSeeked(event) {
+    if(!this._visible){
+      return;
+    }
+
     this._playing = true;
     const title = await this._player.getVideoTitle();
     const url = await this._player.getVideoUrl();
