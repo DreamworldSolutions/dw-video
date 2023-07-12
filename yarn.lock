@@ -46,6 +46,14 @@
     lodash-es "^4.17.21"
     pwa-helpers "^0.9.1"
 
+"@dreamworld/web-util@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@dreamworld/web-util/-/web-util-1.7.0.tgz#1170bb2bec63224750eea5569868d18e0acc858d"
+  integrity sha512-lXuj9P76lpuCshIH0aIcDh7+zvj3Oo8z3+s32ZuykgIgLrMljLsC4Xk7qOgD2UTRQI4VZHt9nIQvYtwbnazl7A==
+  dependencies:
+    bowser "^2.11.0"
+    lodash-es "^4.17.21"
+
 "@gar/promisify@^1.0.1":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
@@ -761,7 +769,7 @@ bottleneck@^2.18.1:
   resolved "https://registry.yarnpkg.com/bottleneck/-/bottleneck-2.19.5.tgz#5df0b90f59fd47656ebe63c78a98419205cadd91"
   integrity sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==
 
-bowser@^2.8.1:
+bowser@^2.11.0, bowser@^2.8.1:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bowser/-/bowser-2.11.0.tgz#5ca3c35757a7aa5771500c70a73a9f91ef420a8f"
   integrity sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==

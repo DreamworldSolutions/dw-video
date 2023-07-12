@@ -1,6 +1,7 @@
 import { LitElement, html, css } from '@dreamworld/pwa-helpers/lit.js';
 import Player from '@vimeo/player';
 import dwFetch from '@dreamworld/fetch';
+import URI from '@dreamworld/web-util/uri-esm.js';
 
 // Components
 import './dw-loader.js';
@@ -169,13 +170,13 @@ export class DwVideo extends LitElement {
     return html`
       ${!this._previewLoaded ? html`<dw-loader></dw-loader>` : ''}
       ${!this.inline
-        ? html`<a href=${this.src} target="_blank"> ${this._thumbnailURL ? html`<img src=${this._thumbnailURL} />` : ''} </a>`
+        ? html`<a href=${this._getVideoUrl()} target="_blank"> ${this._thumbnailURL ? html`<img src=${this._thumbnailURL} />` : ''} </a>`
         : ''}
 
       <div class="embed-container">
         <iframe
           id="video-player"
-          src="${this.src}${!this.inline ? (this.src.includes('?') ? `&controls=0` : `?controls=0`) : ''}"
+          src="${this._getVideoUrl()}${!this.inline ? (this._getVideoUrl().includes('?') ? `&controls=0` : `?controls=0`) : ''}"
           width="100%"
           frameborder="0"
           webkitallowfullscreen
@@ -187,6 +188,18 @@ export class DwVideo extends LitElement {
         </iframe>
       </div>
     `;
+  }
+
+  _getVideoUrl() {
+    let src = this.src;
+    if(this.autoplay) {
+      const uri = new URI(src);
+      uri.setQuery('autoplay', '1');
+      uri.setQuery('loop', '1');
+      uri.setQuery('muted', '1');
+      src = uri.toString();
+    }
+    return src;
   }
 
   __onPreviewLoad() {
@@ -225,7 +238,7 @@ export class DwVideo extends LitElement {
 
   async __loadVideoThumbnail() {
     try {
-      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this.src}&width=1920&height=1080`);
+      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this._getVideoUrl()}&width=1920&height=1080`);
       let responseText;
       try {
         responseText = await response.text();
