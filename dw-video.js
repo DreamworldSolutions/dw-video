@@ -169,13 +169,13 @@ export class DwVideo extends LitElement {
     return html`
       ${!this._previewLoaded ? html`<dw-loader></dw-loader>` : ''}
       ${!this.inline
-        ? html`<a href=${this.src} target="_blank"> ${this._thumbnailURL ? html`<img src=${this._thumbnailURL} />` : ''} </a>`
+        ? html`<a href=${this._getVideoUrl()} target="_blank"> ${this._thumbnailURL ? html`<img src=${this._thumbnailURL} />` : ''} </a>`
         : ''}
 
       <div class="embed-container">
         <iframe
           id="video-player"
-          src="${this.src}${!this.inline ? (this.src.includes('?') ? `&controls=0` : `?controls=0`) : ''}"
+          src="${this._getVideoUrl()}${!this.inline ? (this._getVideoUrl().includes('?') ? `&controls=0` : `?controls=0`) : ''}"
           width="100%"
           frameborder="0"
           webkitallowfullscreen
@@ -187,6 +187,18 @@ export class DwVideo extends LitElement {
         </iframe>
       </div>
     `;
+  }
+
+  _getVideoUrl() {
+    if(this.autoplay) {
+      const autoplay = this.src.match("autoplay");
+      if(!autoplay) {
+        const addParams = "&autoplay=1&loop=1&muted=1"
+        const newURl = this.src.concat(addParams);
+        return newURl;
+      }
+    }
+    return this.src;
   }
 
   __onPreviewLoad() {
@@ -225,7 +237,7 @@ export class DwVideo extends LitElement {
 
   async __loadVideoThumbnail() {
     try {
-      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this.src}&width=1920&height=1080`);
+      const response = await dwFetch(`https://vimeo.com/api/oembed.json?url=${this._getVideoUrl()}&width=1920&height=1080`);
       let responseText;
       try {
         responseText = await response.text();
