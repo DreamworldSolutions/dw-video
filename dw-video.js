@@ -1,6 +1,7 @@
 import { LitElement, html, css } from '@dreamworld/pwa-helpers/lit.js';
 import Player from '@vimeo/player';
 import dwFetch from '@dreamworld/fetch';
+import URI from '@dreamworld/web-util/uri-esm.js';
 
 // Components
 import './dw-loader.js';
@@ -190,15 +191,15 @@ export class DwVideo extends LitElement {
   }
 
   _getVideoUrl() {
+    let src = this.src;
     if(this.autoplay) {
-      const autoplay = this.src.match("autoplay");
-      if(!autoplay) {
-        const addParams = "&autoplay=1&loop=1&muted=1"
-        const newURl = this.src.concat(addParams);
-        return newURl;
-      }
+      const uri = new URI(src);
+      uri.setQuery('autoplay', '1');
+      uri.setQuery('loop', '1');
+      uri.setQuery('muted', '1');
+      src = uri.toString();
     }
-    return this.src;
+    return src;
   }
 
   __onPreviewLoad() {
