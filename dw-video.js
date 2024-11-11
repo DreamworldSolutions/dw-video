@@ -135,6 +135,11 @@ export class DwVideo extends LitElement {
       autoplay: { type: Boolean, reflect: true, attribute: 'auto-play' },
 
       /**
+       * if `true` and autoplay is false and video is play then auto scroll into view-port.
+       */
+      autoScrollIntoViewport: { type: Boolean, reflect: true, attribute: 'auto-scroll-into-view-port' },
+
+      /**
        * if `true` then video is muted.
        */
       muted: { type: Boolean, reflect: true },
@@ -153,6 +158,7 @@ export class DwVideo extends LitElement {
     this.doNotDelayRendering = true;
     this._previewLoaded = false;
     this.autoplay = false;
+    this.autoScrollIntoViewport = false;
     this.muted = false;
     this.loop = false;
     this._onPlay = this._onPlay.bind(this);
@@ -338,6 +344,9 @@ export class DwVideo extends LitElement {
     const title = await this._player.getVideoTitle();
     const url = await this._player.getVideoUrl();
     window.dispatchEvent(new CustomEvent('dw-video-play', { detail: { ...event, title, url } }));
+    if(!this.autoplay && this.autoScrollIntoViewport) {
+      this.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    }
   }
 
   async _onPause(event) {

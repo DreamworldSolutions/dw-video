@@ -42,6 +42,7 @@ A WebComponent to show a video thumbnail on documentation & blog sites.
 |-----------------------|-----------------|-----------|---------|--------------------------------------------------|
 | `inline`              | `inline`        | `boolean` |         | If `true` then shows a inline vimeo video, Otherwise shows a viemo video thumbnail. |
 | `src`                 | `src`           | `string`  |         | Video path/source.<br />It should be vimeo video path e.g. https://player.vimeo.com/video/313303279. |
+| `autoScrollIntoViewport` | `auto-scroll-into-viewport` | `boolean` |     `false`    | If `true` and autoplay is `false` then scrolls the video into viewport on play. |
 
 ## Events
 
